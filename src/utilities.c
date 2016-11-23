@@ -95,7 +95,7 @@ char* _get_xml_value(xmlNode *a_node, char* key) {
 // Search the given XML string for the provided key.
 char* get_xml_value(char *xml, char* key) {
     // Read the XML data from RAM.
-    xmlDoc *doc = xmlReadMemory(xml, strlen(xml), "file.xml", NULL, 0);
+    xmlDoc *doc = xmlReadMemory(xml, strlen(xml), "file.xml", NULL, XML_PARSE_NOERROR | XML_PARSE_NOWARNING );
     // Our searching function requires a node to start with, grab root.
     xmlNode *root = xmlDocGetRootElement(doc);
     // Find the key!

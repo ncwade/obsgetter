@@ -25,7 +25,6 @@ void print_weather(char *xml) {
 
 int main() {
     int rc;
-    char state_buff[40];
     char id_buff[10];
     char run_again[5];
 
@@ -38,8 +37,6 @@ int main() {
 
     // Nest in loop so we can get as many reports as the user would like.
     do {
-        rc = get_timed_line("Enter State or Territory> ", state_buff, sizeof(state_buff), 60);
-
         // If we have valid data we can proceed.
         if (rc == VALID) {
             rc = get_timed_line("Enter station ID> ", id_buff, sizeof(id_buff), 60);
