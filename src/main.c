@@ -12,17 +12,29 @@ void signal_cb(int sig) {
     exit(sig);
 }
 
-// Take an XML document and parse the required weather data from it.
+// Take an XML document and parse the required weather data from it. The data
+// is displayed per the definition within weather.cfg. We expect this to be in
+// the format of title=key.
 void print_weather(char *xml) {
-    printf("Requested Weather Report\n");
-    printf("Station: %s\n", get_xml_value(xml, "station_id"));
-    printf("Location: %s\n", get_xml_value(xml, "location"));
-    printf("Weather: %s\n", get_xml_value(xml, "weather"));
-    printf("Wind Data: %s\n", get_xml_value(xml, "wind_string"));
-    printf("Temp: %s\n", get_xml_value(xml, "temperature_string"));
-    printf("Relative Humidity: %s\n", get_xml_value(xml, "relative_humidity"));
+    FILE *fp = fopen("weather.cfg" , "r");
+    if(fp) {
+        char buf[102];
+        printf("Requested Weather Report\n");
+        while (fgets(buf, sizeof(buf), fp) != NULL) {
+            // Basic comment support.
+            if (buf[0] != '#') {
+                char title[50];
+                char key[50];
+                sscanf(buf, "%50[^'=']=%50s", title, key);
+                printf("%s: %s\n", title, get_xml_value(xml, key));
+            }
+        }
+    } else {
+        printf("Missing weather.cfg. Please recreate.\n");
+    }
 }
 
+// Entry point.
 int main() {
     char run_again[3];
     // Register our signal handler. We want to use the alarm
