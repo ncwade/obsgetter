@@ -23,13 +23,17 @@ struct cstr {
 };
 
 
-// Utility functions.
+// Type related.
 void create_cstr(struct cstr *string);
 void destroy_cstr(struct cstr *string);
+void convert_to_upper(char* string);
 
+// Input related.
 int get_line_safe(char *prompt, char *out_buffer, size_t size);
 int get_timed_line(char *prompt, char *out_buffer, size_t size, int seconds);
 
+// XML related.
 char* get_xml_value(char *xml, char* key);
+void pretty_print_stations(char *xml, char* state);
 
 #endif

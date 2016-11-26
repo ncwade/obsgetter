@@ -17,17 +17,14 @@ void print_weather(char *xml) {
     printf("Requested Weather Report\n");
     printf("Station: %s\n", get_xml_value(xml, "station_id"));
     printf("Location: %s\n", get_xml_value(xml, "location"));
-    printf("Station: %s\n", get_xml_value(xml, "weather"));
-    printf("Station: %s\n", get_xml_value(xml, "wind_string"));
-    printf("Station: %s\n", get_xml_value(xml, "temperature_string"));
-    printf("Station: %s\n", get_xml_value(xml, "relative_humidity"));
+    printf("Weather: %s\n", get_xml_value(xml, "weather"));
+    printf("Wind Data: %s\n", get_xml_value(xml, "wind_string"));
+    printf("Temp: %s\n", get_xml_value(xml, "temperature_string"));
+    printf("Relative Humidity: %s\n", get_xml_value(xml, "relative_humidity"));
 }
 
 int main() {
-    int rc;
-    char id_buff[10];
-    char run_again[5];
-
+    char run_again[3];
     // Register our signal handler. We want to use the alarm
     // functionality, so we need to register for SIGALRM.
     if (signal(SIGALRM, signal_cb) == SIG_ERR) {
@@ -35,10 +32,25 @@ int main() {
         return -5;
     }
 
+    // Pull the XML collection of stations.
+    struct cstr stations;
+    create_cstr(&stations);
+    http_get("http://w1.weather.gov/xml/current_obs/index.xml", &stations);
+
     // Nest in loop so we can get as many reports as the user would like.
     do {
+        int rc;
+        char state[4];
+        char id_buff[6];
+
+        // Get the two character station ID from user.
+        rc = get_timed_line("Enter two-digit state code> ", state, sizeof(state), 60);
         // If we have valid data we can proceed.
         if (rc == VALID) {
+            convert_to_upper(state);
+            // Print the stations that match the state code.
+            pretty_print_stations(stations.str_ptr, state);
+
             rc = get_timed_line("Enter station ID> ", id_buff, sizeof(id_buff), 60);
             if (rc == VALID) {
                 // Since we checked verified the size of the ID buffer we know 256 bytes is enough.
@@ -55,15 +67,18 @@ int main() {
                 // Cleanup.
                 destroy_cstr(&xml);
             } else {
-                printf("Invalid station selected, exiting.\n");
+                printf("Invalid station selected.\n");
             }
         } else {
-            printf("Invalid state selected, exiting.\n");
+            printf("Invalid state selected.\n");
         }
 
         // Prompt the user for exit or continue.
-        rc = get_timed_line("Would you like to submit another weather report[Y/n]> ", run_again, sizeof(run_again), 60);
-    } while(strcmp(run_again, "Y") == 0);
+        rc = get_timed_line("Would you like to submit another weather request[Y/n]> ", run_again, sizeof(run_again), 60);
+        convert_to_upper(run_again);
+    } while(strncmp(run_again, "Y", strlen("Y")) == 0);
 
+    // Delete our station XML file.
+    destroy_cstr(&stations);
     return 0;
 }
