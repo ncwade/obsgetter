@@ -65,6 +65,7 @@ int main() {
 
             rc = get_timed_line("Enter station ID> ", id_buff, sizeof(id_buff), 60);
             if (rc == VALID) {
+                convert_to_upper(id_buff);
                 // Since we checked verified the size of the ID buffer we know 256 bytes is enough.
                 char url[256];
                 // Format the URL.
