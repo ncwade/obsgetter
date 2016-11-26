@@ -4,7 +4,7 @@
  * Wrappers for HTTP commands.
  */
 
-// Includes 
+// Includes
 #include <curl/curl.h>
 #include "utilities.h"
 

@@ -19,8 +19,8 @@ void destroy_cstr(struct cstr *string) {
 
 // Quick way to convert a char string to uppercase.
 void convert_to_upper(char* string) {
-    for (int i = 0; i < strlen(string); i++){
-       string[i] = toupper(string[i]);
+    for (int i = 0; i < strlen(string); i++) {
+        string[i] = toupper(string[i]);
     }
 }
 
@@ -142,7 +142,7 @@ void _print_station_info(xmlNode *a_node, char* state) {
                     printf("%s (%s)\t", id, state_field);
                     count++;
                     // Five is an arbitrary column value.
-                    if (count % 5 == 0){
+                    if (count % 5 == 0) {
                         printf("\n");
                     }
                 }

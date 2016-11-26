@@ -3,8 +3,7 @@
 
 // Custom data handler. The footprint for this can be found at
 // https://curl.haxx.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
-size_t store_data(void *data, size_t size, size_t nmemb, struct cstr *string)
-{
+size_t store_data(void *data, size_t size, size_t nmemb, struct cstr *string) {
     // Figure out how much more room we need.
     size_t new_len = string->len + size*nmemb;
     // Use the new length to reallocate our pointer.

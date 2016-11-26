@@ -5,7 +5,7 @@
  * Provide a method to parse & print a supplied XML string.
  */
 
-// Includes 
+// Includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <libxml/parser.h>
@@ -18,8 +18,8 @@
 
 // Types to simplify data management.
 struct cstr {
-	char *str_ptr;
-	size_t len;
+    char *str_ptr;
+    size_t len;
 };
 
 
