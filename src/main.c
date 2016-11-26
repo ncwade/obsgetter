@@ -14,7 +14,7 @@ void signal_cb(int sig) {
 
 // Take an XML document and parse the required weather data from it. The data
 // is displayed per the definition within weather.cfg. We expect this to be in
-// the format of title=key.
+// the format of title=key. Comment support is very primitive
 void print_weather(char *xml) {
     FILE *fp = fopen("weather.cfg" , "r");
     if(fp) {
