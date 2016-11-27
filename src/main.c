@@ -1,4 +1,5 @@
-#include "utilities.h"
+#include "safe_io.h"
+#include "xml_utils.h"
 #include "http.h"
 #include <signal.h>
 #include <stdlib.h>
@@ -26,7 +27,9 @@ void print_weather(char *xml) {
                 char title[50];
                 char key[50];
                 sscanf(buf, "%50[^'=']=%50s", title, key);
-                printf("%s: %s\n", title, get_xml_value(xml, key));
+                printf("%s: ", title);
+                print_xml_value(xml, key);
+                printf("\n");
             }
         }
     } else {

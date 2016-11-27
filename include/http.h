@@ -6,7 +6,7 @@
 
 // Includes
 #include <curl/curl.h>
-#include "utilities.h"
+#include "cstring.h"
 
 // Main Interfaces
 void http_get(char *url, struct cstr *string);
