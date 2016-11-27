@@ -63,15 +63,15 @@ Due to the small scope of this project, the software requirements will reside he
 
 ---
 * SRD-8
-	* **Justification:** The C library [lib curl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
+	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-9
 	* **Justification:** File is only kept in memory, never stored to disk.
 * SRD-10
-	* **Justification:** The C library [lib curl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
+	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-11
-	* **Justification:** The C library [lib curl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
+	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-13
-	* **Justification:** The C library [lib curl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
+	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-15
 	* **Justification:** The _obsgetter_ application reads the fields to be parsed & displayed from a configuration file. The default configuration will be the fields required in the supplied requirements.
 * SRD-16
@@ -88,11 +88,69 @@ Due to the small scope of this project, the software requirements will reside he
 ---
 
 ## Architecture
-*Describe how the application is broken into modules that handle
-different types of functionality. Each ‘module’ will be placed in a
-separate source file making the code more maintainable.*
+The _obsgetter_ application is broken up into four primary modules and the main loop. There is module for XML related operations, a module for IO, a module for HTTP interfaces, and a module for custom types. The main loop utilizes each of these modules to implement the software requirements listed above. See the detailed design section for more information on each module.
 
 ## Detailed Design
 
-*This section should describe the external API for each module in
-the application and data structures in each module.*
+---
+#### CString
+
+* void create_cstr(struct cstr *string);
+* void destroy_cstr(struct cstr *string);
+* void convert_to_upper(char* string);
+
+The CString module provides access to the type _struct cstr_ and the function calls. This provides single structure that can be used to track a char pointer and the size of the string stored at the location. It allows for simple abstractions to pass the string between the various modules. It provides an easy way to allocate/deallocate the string, as well as just a single parameter to pass between the function.
+
+---
+#### HTTP
+
+* void http_get(char *url, struct cstr *string);
+
+The HTTP module provides a wrapper around the libcurl library. It provides a single function with the following footprint.
+This function takes a url in the format of a char pointer, retrieves the web page stored there, and saves it in the cstr structure.
+
+---
+#### SAFE_IO
+
+* int get_line_safe(char *prompt, char *out_buffer, size_t size);
+* int get_timed_line(char *prompt, char *out_buffer, size_t size, int seconds);
+
+The SAFE_IO module provides methods to simplify getting commandline input in a safe/clean manner. It also provides an interface to retrieve input from the user with an attached timer. These interfaces ensure that the input data; fits in the supplied buffer, a prompt is printed if needed, that the buffer is properly terminated when finished, and that STDIN is flushed so we don't corrupt the next input.
+
+---
+#### XML_UTILS
+
+* void print_xml_value(char *xml, char* key);
+* void pretty_print_stations(char *xml, char* state);
+
+The XML_UTILS module provides two methods that are used by the main loop. The first is a generic interfaces that takes a XML string and a key. The function finds the key and prints the value stored in that node. The second is a interface specific to _obsgetter_. It takes a two character state code and returns every weather station that is associated with that state code. It expects the provided XML to be formated like the following snippet.
+
+```
+<wx_station_index>
+<credit>NOAA's National Weather Service</credit>
+<credit_URL>http://weather.gov/</credit_URL>
+<image>
+	<url>http://weather.gov/images/xml_logo.gif</url>
+	<title>NOAA's National Weather Service</title>
+	<link>http://weather.gov</link>
+</image>
+<suggested_pickup>08:00 EST</suggested_pickup>
+<suggested_pickup_period>1140</suggested_pickup_period>
+<station>
+	<station_id>CWAV</station_id>
+	<state>AB</state>
+	<station_name>Sundre</station_name>
+	<latitude>51.76667</latitude>
+	<longitude>-114.68333</longitude>
+	<html_url>http://weather.noaa.gov/weather/current/CWAV.html</html_url>
+	<rss_url>http://weather.gov/xml/current_obs/CWAV.rss</rss_url>
+	<xml_url>http://weather.gov/xml/current_obs/CWAV.xml</xml_url>
+</station>
+</wx_station_index>
+```
+
+---
+#### MAIN
+The main loop is the core business logic of the _obsgetter_ application. It contains the prompts for user input, the configuration reading logic, the display logic, and the signal handler needed to catch the signal generated if the user input timeouts. It utilizes all of the other modules listed above to implement the core requirement set.
+
+

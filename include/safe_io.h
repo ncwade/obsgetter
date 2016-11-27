@@ -2,7 +2,6 @@
 #define UTILITIES_H
 /*
  * Define a clean/safe abstraction around retrieving user input.
- * Provide a method to parse & print a supplied XML string.
  */
 
 // Includes
