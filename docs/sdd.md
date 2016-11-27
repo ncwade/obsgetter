@@ -18,7 +18,7 @@ _obsgetter_ will find the value represented by the given key within the weather 
 ### Complete Requirements list
 Due to the small scope of this project, the software requirements will reside here within the design document.
 
----
+___
 * SRD-1 The obsgetter application shall display a list of available station identifiers
 * SRD-2 The obsgetter application shall prompt a user to enter a station identifier
 * SRD-3 The obsgetter application shall set a timer for 60 seconds.
@@ -41,11 +41,11 @@ Due to the small scope of this project, the software requirements will reside he
 * SRD-20 The obsgetter application shall display the relative humidity
 * SRD-21 The obsgetter application shall, when finished displaying data, prompt the user for another station identifier.
 
----
+___
 
 ### Fully Compliant Requirements
 
----
+___
 * SRD-1
 * SRD-2
 * SRD-3
@@ -57,11 +57,11 @@ Due to the small scope of this project, the software requirements will reside he
 * SRD-14
 * SRD-21
 
----
+___
 
 ### Partially Compliant Requirements
 
----
+___
 * SRD-8
 	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-9
@@ -85,14 +85,14 @@ Due to the small scope of this project, the software requirements will reside he
 * SRD-20
 	* **Justification:** The _obsgetter_ application reads the fields to be parsed & displayed from a configuration file. The default configuration will be the fields required in the supplied requirements.
 
----
+___
 
 ## Architecture
 The _obsgetter_ application is broken up into four primary modules and the main loop. There is module for XML related operations, a module for IO, a module for HTTP interfaces, and a module for custom types. The main loop utilizes each of these modules to implement the software requirements listed above. See the detailed design section for more information on each module.
 
 ## Detailed Design
 
----
+___
 #### CString
 
 * void create_cstr(struct cstr *string);
@@ -101,7 +101,7 @@ The _obsgetter_ application is broken up into four primary modules and the main 
 
 The CString module provides access to the type _struct cstr_ and the function calls. This provides single structure that can be used to track a char pointer and the size of the string stored at the location. It allows for simple abstractions to pass the string between the various modules. It provides an easy way to allocate/deallocate the string, as well as just a single parameter to pass between the function.
 
----
+___
 #### HTTP
 
 * void http_get(char *url, struct cstr *string);
@@ -109,7 +109,7 @@ The CString module provides access to the type _struct cstr_ and the function ca
 The HTTP module provides a wrapper around the libcurl library. It provides a single function with the following footprint.
 This function takes a url in the format of a char pointer, retrieves the web page stored there, and saves it in the cstr structure.
 
----
+___
 #### SAFE_IO
 
 * int get_line_safe(char *prompt, char *out_buffer, size_t size);
@@ -117,7 +117,7 @@ This function takes a url in the format of a char pointer, retrieves the web pag
 
 The SAFE_IO module provides methods to simplify getting commandline input in a safe/clean manner. It also provides an interface to retrieve input from the user with an attached timer. These interfaces ensure that the input data; fits in the supplied buffer, a prompt is printed if needed, that the buffer is properly terminated when finished, and that STDIN is flushed so we don't corrupt the next input.
 
----
+___
 #### XML_UTILS
 
 * void print_xml_value(char *xml, char* key);
@@ -149,8 +149,9 @@ The XML_UTILS module provides two methods that are used by the main loop. The fi
 </wx_station_index>
 ```
 
----
+___
 #### MAIN
 The main loop is the core business logic of the _obsgetter_ application. It contains the prompts for user input, the configuration reading logic, the display logic, and the signal handler needed to catch the signal generated if the user input timeouts. It utilizes all of the other modules listed above to implement the core requirement set.
 
+___
 

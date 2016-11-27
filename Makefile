@@ -26,6 +26,10 @@ HEADERS = $(wildcard include/*.h)
 $(TARGET): $(OBJECTS)
 	$(CC) -Wall $(LIBS) -o $@ $(OBJECTS)
 
+doc:
+	-pandoc --from markdown-yaml_metadata_block -o sdd.docx ./docs/sdd.md 
+
 clean:
 	-rm -f src/*.o
 	-rm -f $(TARGET)
+	-rm -f *.docx
