@@ -53,6 +53,10 @@ ___
 * SRD-5
 * SRD-6
 * SRD-7
+* SRD-8
+* SRD-10
+* SRD-11
+* SRD-13
 * SRD-12
 * SRD-14
 * SRD-21
@@ -62,16 +66,8 @@ ___
 ### Partially Compliant Requirements
 
 ___
-* SRD-8
-	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-9
 	* **Justification:** File is only kept in memory, never stored to disk.
-* SRD-10
-	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
-* SRD-11
-	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
-* SRD-13
-	* **Justification:** The C library [libcurl](https://curl.haxx.se/libcurl/) is used for the HTTP interface. This removes the need to set the majority of the HTTP headers.
 * SRD-15
 	* **Justification:** The _obsgetter_ application reads the fields to be parsed & displayed from a configuration file. The default configuration will be the fields required in the supplied requirements.
 * SRD-16
@@ -95,35 +91,37 @@ The _obsgetter_ application is broken up into four primary modules and the main 
 ___
 #### CString
 
-* void create_cstr(struct cstr *string);
-* void destroy_cstr(struct cstr *string);
-* void convert_to_upper(char* string);
-
 The CString module provides access to the type _struct cstr_ and the function calls. This provides single structure that can be used to track a char pointer and the size of the string stored at the location. It allows for simple abstractions to pass the string between the various modules. It provides an easy way to allocate/deallocate the string, as well as just a single parameter to pass between the function.
+
+* void create_cstr(struct cstr *string);
+	* Allocate and return an emptry cstring. This has a size of 1 and contains just a null character.
+* void destroy_cstr(struct cstr *string);
+	* Free the memory stored in the cstring and set the length to -1.
+* void convert_to_upper(char* string);
+	* Convert a char string to upper case. This string needs to be null-terminated. This function might be a little out of place here.
 
 ___
 #### HTTP
 
-* void http_get(char *url, struct cstr *string);
+The HTTP module provides a wrapper around the UNIX socket structures that can be used to retrieve a file over HTTP.
 
-The HTTP module provides a wrapper around the libcurl library. It provides a single function with the following footprint.
-This function takes a url in the format of a char pointer, retrieves the web page stored there, and saves it in the cstr structure.
+* void http_file_fetch(char *host, char *file_name, struct cstr *string);
+	* Retrieve the provided file name, from the provided host, and store it within the provided cstring structure. The data stored will be just the file requested with the HTTP header stripped off of the data.
 
 ___
 #### SAFE_IO
 
-* int get_line_safe(char *prompt, char *out_buffer, size_t size);
-* int get_timed_line(char *prompt, char *out_buffer, size_t size, int seconds);
+The SAFE_IO module provides methods to simplify getting commandline input in a safe/clean manner. It also provides an interface to retrieve input from the user with an attached timer.
 
-The SAFE_IO module provides methods to simplify getting commandline input in a safe/clean manner. It also provides an interface to retrieve input from the user with an attached timer. These interfaces ensure that the input data; fits in the supplied buffer, a prompt is printed if needed, that the buffer is properly terminated when finished, and that STDIN is flushed so we don't corrupt the next input.
+* int get_line_safe(char *prompt, char *out_buffer, size_t size);
+	* Ensure that the input data; fits in the supplied buffer, a prompt is printed if needed, that the buffer is properly terminated when finished, and that STDIN is flushed so we don't corrupt the next input.
+* int get_timed_line(char *prompt, char *out_buffer, size_t size, int seconds);
+	* Wraps get_line_safe with calls to alarm. If the user doesn't provide input by x seconds raise a signal. This signal(SIGALRM) can be handled by the controlling application and the appropriate actions taken.
 
 ___
 #### XML_UTILS
 
-* void print_xml_value(char *xml, char* key);
-* void pretty_print_stations(char *xml, char* state);
-
-The XML_UTILS module provides two methods that are used by the main loop. The first is a generic interfaces that takes a XML string and a key. The function finds the key and prints the value stored in that node. The second is a interface specific to _obsgetter_. It takes a two character state code and returns every weather station that is associated with that state code. It expects the provided XML to be formated like the following snippet.
+The XML_UTILS module provides interfaces for working with XML. It expects the provided XML to be formated like the following snippet.
 
 ```
 <wx_station_index>
@@ -148,6 +146,12 @@ The XML_UTILS module provides two methods that are used by the main loop. The fi
 </station>
 </wx_station_index>
 ```
+
+* void print_xml_value(char *xml, char* key);
+	* A generic interfaces that takes a XML string and a key. The function finds the key and prints the value stored in that node.
+* void pretty_print_stations(char *xml, char* state);
+	* Ainterface specific to _obsgetter_. It takes a two character state code and returns every weather station that is associated with that state code. 
+
 
 ___
 #### MAIN

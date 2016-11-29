@@ -1,5 +1,5 @@
 TARGET = obsgetter
-LIBS = -lcurl -lxml2
+LIBS = -lxml2
 CC = gcc
 INCLUDE=./include
 CFLAGS = -g -I$(INCLUDE)
@@ -13,7 +13,7 @@ endif
 .PHONY: default all clean
 
 default: $(TARGET)
-all: default
+all: default doc
 
 OBJECTS = $(patsubst %.c, %.o, $(wildcard src/*.c))
 HEADERS = $(wildcard include/*.h)
@@ -27,7 +27,7 @@ $(TARGET): $(OBJECTS)
 	$(CC) -Wall $(LIBS) -o $@ $(OBJECTS)
 
 doc:
-	-pandoc --from markdown-yaml_metadata_block -o sdd.docx ./docs/sdd.md 
+	-pandoc -o sdd.docx ./docs/sdd.md 
 
 clean:
 	-rm -f src/*.o

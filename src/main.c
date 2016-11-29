@@ -19,7 +19,7 @@ void signal_cb(int sig) {
 void print_weather(char *xml) {
     FILE *fp = fopen("weather.cfg" , "r");
     if(fp) {
-        char buf[102];
+        char buf[102] = {0};
         printf("Requested Weather Report\n");
         while (fgets(buf, sizeof(buf), fp) != NULL) {
             // Basic comment support.
@@ -39,7 +39,7 @@ void print_weather(char *xml) {
 
 // Entry point.
 int main() {
-    char run_again[3];
+    char run_again[3] = {0};
     // Register our signal handler. We want to use the alarm
     // functionality, so we need to register for SIGALRM.
     if (signal(SIGALRM, signal_cb) == SIG_ERR) {
@@ -50,13 +50,13 @@ int main() {
     // Pull the XML collection of stations.
     struct cstr stations;
     create_cstr(&stations);
-    http_get("http://w1.weather.gov/xml/current_obs/index.xml", &stations);
+    http_file_fetch("w1.weather.gov", "/xml/current_obs/index.xml", &stations);
 
     // Nest in loop so we can get as many reports as the user would like.
     do {
         int rc;
-        char state[4];
-        char id_buff[6];
+        char state[4] = {0};
+        char id_buff[6] = {0};
 
         // Get the two character station ID from user.
         rc = get_timed_line("Enter two-digit state code> ", state, sizeof(state), 60);
@@ -70,14 +70,14 @@ int main() {
             if (rc == VALID) {
                 convert_to_upper(id_buff);
                 // Since we checked verified the size of the ID buffer we know 256 bytes is enough.
-                char url[256];
-                // Format the URL.
-                snprintf(url, sizeof(url), "http://w1.weather.gov/xml/current_obs/%s.xml", id_buff);
+                char file_path[256] = {0};
+                // Format the file_path.
+                snprintf(file_path, sizeof(file_path), "/xml/current_obs/%s.xml", id_buff);
                 // Use the custom string type used by our HTTP wrapper.
                 struct cstr xml;
                 create_cstr(&xml);
                 // Pull XML from server.
-                http_get(url, &xml);
+                http_file_fetch("w1.weather.gov", file_path, &xml);
                 // Pass XML to formatting function.
                 print_weather(xml.str_ptr);
                 // Cleanup.

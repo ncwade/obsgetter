@@ -5,10 +5,9 @@
  */
 
 // Includes
-#include <curl/curl.h>
 #include "cstring.h"
 
 // Main Interfaces
-void http_get(char *url, struct cstr *string);
+void http_file_fetch(char *host, char *file_name, struct cstr *string);
 
 #endif
