@@ -1,6 +1,6 @@
 ## Synopsis
 
-obsgetter is the test out project assigned for CS235. It is a command line application that retrieves weather reports from Government Weather site](http://w1.weather.gov).
+obsgetter is the test out project assigned for CS235. It is a command line application that retrieves weather reports from [National Weather Service](http://w1.weather.gov).
 
 ## Building
 Running "make" will generate the obsgetter application. Running "make doc" will generate a Word DOCX document from the markdown SDD.
